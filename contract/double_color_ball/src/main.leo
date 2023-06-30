@@ -65,6 +65,7 @@ program double_color_ball.aleo {
         red_ball_6: u32,
         blue_ball_1: u32,
         reward:u64,
+        index:u32,
 
     }
 
@@ -80,16 +81,8 @@ program double_color_ball.aleo {
     // 轮次对应的参与者
     mapping ticketPurchaseMap: u32 => TicketPurchaseInfo;
     // 中奖名单
-    mapping firstWinningListMap: u32 => TicketPurchasePriceInfo;
-    mapping secondWinningListMap: u32 => TicketPurchasePriceInfo;
-    mapping thirdWinningListMap: u32 => TicketPurchasePriceInfo;
+    mapping winningListMap: u32 => TicketPurchasePriceInfo;
 
-    mapping firstWinningListAmount:u32 => u64;
-    mapping secondWinningListAmount:u32 => u64;
-    mapping thirdWinningListAmount:u32 => u64;
-
-    // 存放六个红色球
-    mapping priceDrawingTempMap: u32 =>u8;
 
 
     transition new_round_lottery_drawing () {
@@ -248,12 +241,7 @@ program double_color_ball.aleo {
         if (!finish) {
             assert_eq(0u8, 1u8);
         }
-        Mapping::set(priceDrawingTempMap,red_ball_1,1u8);
-        Mapping::set(priceDrawingTempMap,red_ball_2,1u8);
-        Mapping::set(priceDrawingTempMap,red_ball_3,1u8);
-        Mapping::set(priceDrawingTempMap,red_ball_4,1u8);
-        Mapping::set(priceDrawingTempMap,red_ball_5,1u8);
-        Mapping::set(priceDrawingTempMap,red_ball_6,1u8);
+
 
         let height:u32 = block.height;
         let blue_number:u32= seed_min+height+3u32;
@@ -264,49 +252,61 @@ program double_color_ball.aleo {
         // 中奖
         let end:u32 = current_prize_pool.current_round_num+1u32;
 
+        let default_price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                        user: caller,
+                        round_number: 0u32, 
+                        count:0u32, 
+                        gates: 0u64,
+                        red_ball_1: 0u32,
+                        red_ball_2: 0u32,
+                        red_ball_3: 0u32,
+                        red_ball_4: 0u32,
+                        red_ball_5: 0u32,
+                        red_ball_6: 0u32,
+                        blue_ball_1: 0u32,
+                        reward:0u64,
+                        index:10u32,
+                };
 
-        let first_count:u32 = 0u32;
-        let second_count:u32 = 0u32;
-        let third_count:u32 = 0u32;
+        let first_price:TicketPurchasePriceInfo = default_price_info;
+        let second_price:TicketPurchasePriceInfo = default_price_info;
+        let third_price:TicketPurchasePriceInfo = default_price_info;
+        let four_price:TicketPurchasePriceInfo = default_price_info;
+        let five_price:TicketPurchasePriceInfo = default_price_info;
 
-        let finish_flag:bool = false; 
+        let finish_flag_1:bool = false; 
+
+        // 获取第一名
         for i:u32 in 1u32..100u32 {
-            if (!finish_flag) {
+            if (!finish_flag_1) {
                 let index_final:u32 = i;
                 let temp_ticket_purchase:TicketPurchaseInfo = Mapping::get(ticketPurchaseMap,index_final);
                 let cur_prize:u8 = 0u8;
+                let red_meet_count:u8 = 0u8;
                 if(temp_ticket_purchase.blue_ball_1 == blue_ball_1) {
                     // 中一个蓝球
-                    let red_meet_count:u8 = 0u8;
-                    let flag1:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_1,0u8);
-                    if(flag1 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+                    if(temp_ticket_purchase.red_ball_1==red_ball_1 || temp_ticket_purchase.red_ball_1==red_ball_2 ||  temp_ticket_purchase.red_ball_1==red_ball_3 ||  temp_ticket_purchase.red_ball_1==red_ball_4 ||  temp_ticket_purchase.red_ball_1==red_ball_5 ||  temp_ticket_purchase.red_ball_1==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
-                    let flag2:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_2,0u8);
-                    if(flag2 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+
+                    if(temp_ticket_purchase.red_ball_2==red_ball_1 || temp_ticket_purchase.red_ball_2==red_ball_2 ||  temp_ticket_purchase.red_ball_2==red_ball_3 ||  temp_ticket_purchase.red_ball_2==red_ball_4 ||  temp_ticket_purchase.red_ball_2==red_ball_5 ||  temp_ticket_purchase.red_ball_2==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
-                    let flag3:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_3,0u8);
-                    if(flag3 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+                    
+                    if(temp_ticket_purchase.red_ball_3==red_ball_1 || temp_ticket_purchase.red_ball_3==red_ball_2 ||  temp_ticket_purchase.red_ball_3==red_ball_3 ||  temp_ticket_purchase.red_ball_3==red_ball_4 ||  temp_ticket_purchase.red_ball_3==red_ball_5 ||  temp_ticket_purchase.red_ball_3==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
-                    let flag4:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_4,0u8);
-                    if(flag4 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+                    
+                    if(temp_ticket_purchase.red_ball_4==red_ball_1 || temp_ticket_purchase.red_ball_4==red_ball_2 ||  temp_ticket_purchase.red_ball_4==red_ball_3 ||  temp_ticket_purchase.red_ball_4==red_ball_4 ||  temp_ticket_purchase.red_ball_4==red_ball_5 ||  temp_ticket_purchase.red_ball_4==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
-                    let flag5:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_5,0u8);
-                    if(flag5 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+                    
+                    if(temp_ticket_purchase.red_ball_5==red_ball_1 || temp_ticket_purchase.red_ball_5==red_ball_2 ||  temp_ticket_purchase.red_ball_5==red_ball_3 ||  temp_ticket_purchase.red_ball_5==red_ball_4 ||  temp_ticket_purchase.red_ball_5==red_ball_5 ||  temp_ticket_purchase.red_ball_5==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
-                    let flag6:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_6,0u8);
-                    if(flag6 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+                    
+                    if(temp_ticket_purchase.red_ball_6==red_ball_1 || temp_ticket_purchase.red_ball_6==red_ball_2 ||  temp_ticket_purchase.red_ball_6==red_ball_3 ||  temp_ticket_purchase.red_ball_6==red_ball_4 ||  temp_ticket_purchase.red_ball_6==red_ball_5 ||  temp_ticket_purchase.red_ball_6==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
 
                     if (red_meet_count>=3u8) {
@@ -318,36 +318,29 @@ program double_color_ball.aleo {
                     }
                 } else {
                     // 未中蓝球
-                    let red_meet_count:u8 = 0u8;
-                    let flag1:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_1,0u8);
-                    if(flag1 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+                    if(temp_ticket_purchase.red_ball_1==red_ball_1 || temp_ticket_purchase.red_ball_1==red_ball_2 ||  temp_ticket_purchase.red_ball_1==red_ball_3 ||  temp_ticket_purchase.red_ball_1==red_ball_4 ||  temp_ticket_purchase.red_ball_1==red_ball_5 ||  temp_ticket_purchase.red_ball_1==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
-                    let flag2:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_2,0u8);
-                    if(flag2 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+                    
+
+                    if(temp_ticket_purchase.red_ball_2==red_ball_1 || temp_ticket_purchase.red_ball_2==red_ball_2 ||  temp_ticket_purchase.red_ball_2==red_ball_3 ||  temp_ticket_purchase.red_ball_2==red_ball_4 ||  temp_ticket_purchase.red_ball_2==red_ball_5 ||  temp_ticket_purchase.red_ball_2==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
-                    let flag3:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_3,0u8);
-                    if(flag3 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+                    
+                    if(temp_ticket_purchase.red_ball_3==red_ball_1 || temp_ticket_purchase.red_ball_3==red_ball_2 ||  temp_ticket_purchase.red_ball_3==red_ball_3 ||  temp_ticket_purchase.red_ball_3==red_ball_4 ||  temp_ticket_purchase.red_ball_3==red_ball_5 ||  temp_ticket_purchase.red_ball_3==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
-                    let flag4:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_4,0u8);
-                    if(flag4 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+                    
+                    if(temp_ticket_purchase.red_ball_4==red_ball_1 || temp_ticket_purchase.red_ball_4==red_ball_2 ||  temp_ticket_purchase.red_ball_4==red_ball_3 ||  temp_ticket_purchase.red_ball_4==red_ball_4 ||  temp_ticket_purchase.red_ball_4==red_ball_5 ||  temp_ticket_purchase.red_ball_4==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
-                    let flag5:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_5,0u8);
-                    if(flag5 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+                    
+                    if(temp_ticket_purchase.red_ball_5==red_ball_1 || temp_ticket_purchase.red_ball_5==red_ball_2 ||  temp_ticket_purchase.red_ball_5==red_ball_3 ||  temp_ticket_purchase.red_ball_5==red_ball_4 ||  temp_ticket_purchase.red_ball_5==red_ball_5 ||  temp_ticket_purchase.red_ball_5==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
-                    let flag6:u8 = Mapping::get_or_use(priceDrawingTempMap,temp_ticket_purchase.red_ball_6,0u8);
-                    if(flag6 == 1u8) {
-                        // 中一个
-                        red_meet_count = red_meet_count +1u8;
+                    
+                    if(temp_ticket_purchase.red_ball_6==red_ball_1 || temp_ticket_purchase.red_ball_6==red_ball_2 ||  temp_ticket_purchase.red_ball_6==red_ball_3 ||  temp_ticket_purchase.red_ball_6==red_ball_4 ||  temp_ticket_purchase.red_ball_6==red_ball_5 ||  temp_ticket_purchase.red_ball_6==red_ball_6) {
+                         red_meet_count = red_meet_count +1u8;
                     }
 
                     if (red_meet_count>=3u8) {
@@ -358,61 +351,340 @@ program double_color_ball.aleo {
                 }
                 
                 // TODO 目前leo还不支持for里用set，等更新吧 写不动了
-                // let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
-                //         user: temp_ticket_purchase.user,
-                //         round_number: temp_ticket_purchase.round_number, 
-                //         count:temp_ticket_purchase.count, 
-                //         gates: temp_ticket_purchase.gates,
-                //         red_ball_1: temp_ticket_purchase.red_ball_1,
-                //         red_ball_2: temp_ticket_purchase.red_ball_2,
-                //         red_ball_3: temp_ticket_purchase.red_ball_3,
-                //         red_ball_4: temp_ticket_purchase.red_ball_4,
-                //         red_ball_5: temp_ticket_purchase.red_ball_5,
-                //         red_ball_6: temp_ticket_purchase.red_ball_6,
-                //         blue_ball_1: temp_ticket_purchase.blue_ball_1,
-                //         reward:0u64,
-                // };
 
-                // if (cur_prize == 1u8) {
-                //     // 判断first
-                //     first_count = first_count+1u32;
-                //     Mapping::set(firstWinningListMap,first_count,price_info);
-                // } 
-                // if (cur_prize == 2u8) {
-                //     second_count = second_count+1u32;
-                //     Mapping::set(secondWinningListMap,second_count,price_info);
-                // } 
-                // if (cur_prize == 3u8) {
-                //     third_count = third_count + 1u32;
-                //     Mapping::set(thirdWinningListMap,third_count,price_info);
-                // }
+
+                if (cur_prize == 1u8) {
+
+                    if(first_price.index>1u32) {
+                        let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                            user: temp_ticket_purchase.user,
+                            round_number: temp_ticket_purchase.round_number, 
+                            count:temp_ticket_purchase.count, 
+                            gates: temp_ticket_purchase.gates,
+                            red_ball_1: temp_ticket_purchase.red_ball_1,
+                            red_ball_2: temp_ticket_purchase.red_ball_2,
+                            red_ball_3: temp_ticket_purchase.red_ball_3,
+                            red_ball_4: temp_ticket_purchase.red_ball_4,
+                            red_ball_5: temp_ticket_purchase.red_ball_5,
+                            red_ball_6: temp_ticket_purchase.red_ball_6,
+                            blue_ball_1: temp_ticket_purchase.blue_ball_1,
+                            reward:0u64,
+                            index:1u32
+                        };
+                        // 第一名
+                        first_price = price_info;
+                    } else {
+                        // 尝试是否能当第二名
+                        if(second_price.index>1u32) {
+                            let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                                user: temp_ticket_purchase.user,
+                                round_number: temp_ticket_purchase.round_number, 
+                                count:temp_ticket_purchase.count, 
+                                gates: temp_ticket_purchase.gates,
+                                red_ball_1: temp_ticket_purchase.red_ball_1,
+                                red_ball_2: temp_ticket_purchase.red_ball_2,
+                                red_ball_3: temp_ticket_purchase.red_ball_3,
+                                red_ball_4: temp_ticket_purchase.red_ball_4,
+                                red_ball_5: temp_ticket_purchase.red_ball_5,
+                                red_ball_6: temp_ticket_purchase.red_ball_6,
+                                blue_ball_1: temp_ticket_purchase.blue_ball_1,
+                                reward:0u64,
+                                index:1u32
+                            };
+                            // 第二名变为第三名
+                            third_price = second_price;
+                            second_price = price_info;
+                        } else {
+                            // 尝试三等奖
+                            if(third_price.index>1u32) {
+                                let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                                    user: temp_ticket_purchase.user,
+                                    round_number: temp_ticket_purchase.round_number, 
+                                    count:temp_ticket_purchase.count, 
+                                    gates: temp_ticket_purchase.gates,
+                                    red_ball_1: temp_ticket_purchase.red_ball_1,
+                                    red_ball_2: temp_ticket_purchase.red_ball_2,
+                                    red_ball_3: temp_ticket_purchase.red_ball_3,
+                                    red_ball_4: temp_ticket_purchase.red_ball_4,
+                                    red_ball_5: temp_ticket_purchase.red_ball_5,
+                                    red_ball_6: temp_ticket_purchase.red_ball_6,
+                                    blue_ball_1: temp_ticket_purchase.blue_ball_1,
+                                    reward:0u64,
+                                    index:1u32
+                                };
+                                // 第三名
+                                first_price = price_info;
+                                finish_flag_1 = true; 
+                            } else {
+                                // 第三名也是一等奖
+                                 finish_flag_1 = true; 
+                            }
+                        }
+                    }
+                } 
+
+
+                if (cur_prize == 2u8) {
+
+                    // 尝试是否能当第二名
+                    if(second_price.index>2u32) {
+                        let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                            user: temp_ticket_purchase.user,
+                            round_number: temp_ticket_purchase.round_number, 
+                            count:temp_ticket_purchase.count, 
+                            gates: temp_ticket_purchase.gates,
+                            red_ball_1: temp_ticket_purchase.red_ball_1,
+                            red_ball_2: temp_ticket_purchase.red_ball_2,
+                            red_ball_3: temp_ticket_purchase.red_ball_3,
+                            red_ball_4: temp_ticket_purchase.red_ball_4,
+                            red_ball_5: temp_ticket_purchase.red_ball_5,
+                            red_ball_6: temp_ticket_purchase.red_ball_6,
+                            blue_ball_1: temp_ticket_purchase.blue_ball_1,
+                            reward:0u64,
+                            index:2u32
+                        };
+                        // 第二名变为第三名
+                        third_price = second_price;
+                        second_price = price_info;
+                    } else {
+                        // 尝试三等奖
+                        if(third_price.index>2u32) {
+                            let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                                user: temp_ticket_purchase.user,
+                                round_number: temp_ticket_purchase.round_number, 
+                                count:temp_ticket_purchase.count, 
+                                gates: temp_ticket_purchase.gates,
+                                red_ball_1: temp_ticket_purchase.red_ball_1,
+                                red_ball_2: temp_ticket_purchase.red_ball_2,
+                                red_ball_3: temp_ticket_purchase.red_ball_3,
+                                red_ball_4: temp_ticket_purchase.red_ball_4,
+                                red_ball_5: temp_ticket_purchase.red_ball_5,
+                                red_ball_6: temp_ticket_purchase.red_ball_6,
+                                blue_ball_1: temp_ticket_purchase.blue_ball_1,
+                                reward:0u64,
+                                index:2u32
+                            };
+                            // 第三名
+                            four_price = third_price;
+                            third_price = price_info;
+                        } else {
+                            // 尝试四等奖
+                            if(four_price.index>2u32) {
+                                let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                                    user: temp_ticket_purchase.user,
+                                    round_number: temp_ticket_purchase.round_number, 
+                                    count:temp_ticket_purchase.count, 
+                                    gates: temp_ticket_purchase.gates,
+                                    red_ball_1: temp_ticket_purchase.red_ball_1,
+                                    red_ball_2: temp_ticket_purchase.red_ball_2,
+                                    red_ball_3: temp_ticket_purchase.red_ball_3,
+                                    red_ball_4: temp_ticket_purchase.red_ball_4,
+                                    red_ball_5: temp_ticket_purchase.red_ball_5,
+                                    red_ball_6: temp_ticket_purchase.red_ball_6,
+                                    blue_ball_1: temp_ticket_purchase.blue_ball_1,
+                                    reward:0u64,
+                                    index:2u32
+                                };
+                                // 第三名
+                                five_price = four_price;
+                                four_price = price_info;
+                            } else {
+                                // 前三名必须是大于二等奖的才行
+                            }
+                        }
+                    }
+                    
+                } 
+
+
+                if (cur_prize == 3u8) {
+
+                    // 尝试三等奖
+                    if(third_price.index>3u32) {
+                        let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                            user: temp_ticket_purchase.user,
+                            round_number: temp_ticket_purchase.round_number, 
+                            count:temp_ticket_purchase.count, 
+                            gates: temp_ticket_purchase.gates,
+                            red_ball_1: temp_ticket_purchase.red_ball_1,
+                            red_ball_2: temp_ticket_purchase.red_ball_2,
+                            red_ball_3: temp_ticket_purchase.red_ball_3,
+                            red_ball_4: temp_ticket_purchase.red_ball_4,
+                            red_ball_5: temp_ticket_purchase.red_ball_5,
+                            red_ball_6: temp_ticket_purchase.red_ball_6,
+                            blue_ball_1: temp_ticket_purchase.blue_ball_1,
+                            reward:0u64,
+                            index:3u32
+                        };
+                        // 第三名
+                        four_price = third_price;
+                        third_price = price_info;
+                    } else {
+                        // 尝试四等奖
+                        if(four_price.index>3u32) {
+                            let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                                user: temp_ticket_purchase.user,
+                                round_number: temp_ticket_purchase.round_number, 
+                                count:temp_ticket_purchase.count, 
+                                gates: temp_ticket_purchase.gates,
+                                red_ball_1: temp_ticket_purchase.red_ball_1,
+                                red_ball_2: temp_ticket_purchase.red_ball_2,
+                                red_ball_3: temp_ticket_purchase.red_ball_3,
+                                red_ball_4: temp_ticket_purchase.red_ball_4,
+                                red_ball_5: temp_ticket_purchase.red_ball_5,
+                                red_ball_6: temp_ticket_purchase.red_ball_6,
+                                blue_ball_1: temp_ticket_purchase.blue_ball_1,
+                                reward:0u64,
+                                index:3u32
+                            };
+                            // 第四名
+                            five_price = four_price;
+                            four_price = price_info;
+                        } else {
+                            // 尝试五等奖
+                            if(five_price.index>3u32) {
+                                let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                                    user: temp_ticket_purchase.user,
+                                    round_number: temp_ticket_purchase.round_number, 
+                                    count:temp_ticket_purchase.count, 
+                                    gates: temp_ticket_purchase.gates,
+                                    red_ball_1: temp_ticket_purchase.red_ball_1,
+                                    red_ball_2: temp_ticket_purchase.red_ball_2,
+                                    red_ball_3: temp_ticket_purchase.red_ball_3,
+                                    red_ball_4: temp_ticket_purchase.red_ball_4,
+                                    red_ball_5: temp_ticket_purchase.red_ball_5,
+                                    red_ball_6: temp_ticket_purchase.red_ball_6,
+                                    blue_ball_1: temp_ticket_purchase.blue_ball_1,
+                                    reward:0u64,
+                                    index:3u32
+                                };
+                                // 第五名
+                                five_price = price_info;
+                            } else {
+                            }
+                        }
+                    }
+                }
+
             }
         }
 
-        let first_devied_amount:u64 = 0u64;
-        let second_devied_amount:u64 = 0u64;
-        let third_devied_amount:u64 = 0u64;
 
-        if first_count > 0u32 {
-            // 一等奖有中奖的
-            first_devied_amount = current_prize_pool.money*(70u64/100u64)*(80u64/100u64);
-            Mapping::set(firstWinningListAmount,current_prize_pool.current_round,first_devied_amount);
-        }
+        let first_reward:u64 = 0u64;
+        let second_reward:u64 = 0u64;
+        let third_reward:u64 = 0u64;
 
-        if first_count > 0u32 {
-            // 二等奖有中奖的
-            second_devied_amount = current_prize_pool.money*(70u64/100u64)*(15u64/100u64);
-            Mapping::set(secondWinningListAmount,current_prize_pool.current_round,second_devied_amount);
-        }
 
-        if third_count > 0u32 {
-            // 三等奖有中奖的
-            third_devied_amount = current_prize_pool.money*(70u64/100u64)*(5u64/100u64);
-            Mapping::set(thirdWinningListAmount,current_prize_pool.current_round,third_devied_amount);
+        let first_total_price_amount:u64 = current_prize_pool.money*(70u64/100u64)*(80u64/100u64);
+        let second_total_price_amount:u64 = current_prize_pool.money*(70u64/100u64)*(15u64/100u64);
+        let third_total_price_amount:u64 = current_prize_pool.money*(70u64/100u64)*(5u64/100u64);
+
+        if (first_price.index == 1u32) {
+            if (first_price.index == 1u32 && second_price.index==10u32 && third_price.index==10u32)  {
+                first_reward = first_total_price_amount;
+            } 
+
+            if (first_price.index == 1u32 && second_price.index==1u32 && third_price.index==10u32)  {
+                first_reward = first_total_price_amount*1u64/2u64;
+                second_reward = first_total_price_amount*1u64/2u64;
+            } 
+
+            if (first_price.index == 1u32 && second_price.index==1u32 && third_price.index==1u32)  {
+                first_reward = first_total_price_amount*1u64/3u64;
+                second_reward = first_total_price_amount*1u64/3u64;
+                third_reward = first_total_price_amount*1u64/3u64;
+            } 
+        
+            if (first_price.index == 1u32 && second_price.index==1u32 && third_price.index==2u32)  {
+                first_reward = first_total_price_amount*1u64/2u64;
+                second_reward = first_total_price_amount*1u64/2u64;
+                third_reward = second_total_price_amount;
+            } 
+
+            if (first_price.index == 1u32 && second_price.index==1u32 && third_price.index==3u32)  {
+                first_reward = first_total_price_amount*1u64/2u64;
+                second_reward = first_total_price_amount*1u64/2u64;
+                third_reward = third_total_price_amount;
+            } 
+
+            if (first_price.index == 1u32 && second_price.index==2u32 && third_price.index==10u32)  {
+                first_reward = first_total_price_amount;
+                second_reward = second_total_price_amount;
+            } 
+
+            if (first_price.index == 1u32 && second_price.index==2u32 && third_price.index==2u32)  {
+                first_reward = first_total_price_amount;
+                second_reward = second_total_price_amount*1u64/2u64;
+                third_reward = second_total_price_amount*1u64/2u64;
+            } 
+            if (first_price.index == 1u32 && second_price.index==2u32 && third_price.index==3u32)  {
+                first_reward = first_total_price_amount;
+                second_reward = second_total_price_amount;
+                third_reward = third_total_price_amount;
+            } 
+
+            if (first_price.index == 1u32 && second_price.index==3u32 && third_price.index==0u32)  {
+                first_reward = first_total_price_amount;
+                second_reward = third_total_price_amount;
+            } 
+
+            if (first_price.index == 1u32 && second_price.index==3u32 && third_price.index==3u32)  {
+                first_reward = first_total_price_amount;
+                second_reward = third_total_price_amount*1u64/2u64;
+                third_reward = third_total_price_amount*1u64/2u64;
+            } 
+        } else {
+            // 无一等奖中奖
+            // 有二等奖中奖
+            if(second_price.index == 2u32) {
+                if (second_price.index == 2u32 && third_price.index==10u32 && four_price.index==10u32)  {
+                    first_reward = second_total_price_amount;
+                } 
+                if (second_price.index == 2u32 && third_price.index==2u32 && four_price.index==10u32)  {
+                    first_reward = second_total_price_amount*1u64/2u64;
+                    second_reward = second_total_price_amount*1u64/2u64;
+                } 
+                if (second_price.index == 2u32 && third_price.index==2u32 && four_price.index==2u32)  {
+                    first_reward = second_total_price_amount*1u64/3u64;
+                    second_reward = second_total_price_amount*1u64/3u64;
+                    third_reward = second_total_price_amount*1u64/3u64;
+                } 
+                if (second_price.index == 2u32 && third_price.index==2u32 && four_price.index==3u32)  {
+                    first_reward = second_total_price_amount*1u64/2u64;
+                    second_reward = second_total_price_amount*1u64/2u64;
+                    third_reward = third_total_price_amount*1u64/3u64;
+                } 
+                if (second_price.index == 2u32 && third_price.index==3u32 && four_price.index==10u32)  {
+                    first_reward = second_total_price_amount;
+                    second_reward = third_total_price_amount;
+                } 
+                if (second_price.index == 2u32 && third_price.index==3u32 && four_price.index==3u32)  {
+                    first_reward = second_total_price_amount;
+                    second_reward = third_total_price_amount*1u64/2u64;
+                    third_reward = third_total_price_amount*1u64/2u64;
+                } 
+            } else {
+                // 无二等奖中奖
+                // 有三等奖中奖
+                if(third_price.index == 3u32) {
+                    if (third_price.index == 3u32 && four_price.index==10u32 && five_price.index==10u32)  {
+                        first_reward = third_total_price_amount;
+                    } 
+                    if (third_price.index == 3u32 && four_price.index==3u32 && five_price.index==10u32)  {
+                        first_reward = third_total_price_amount*1u64/2u64;
+                        second_reward =  third_total_price_amount*1u64/2u64;
+                    } 
+                    if (third_price.index == 3u32 && four_price.index==3u32 && five_price.index==3u32)  {
+                        first_reward = third_total_price_amount*1u64/3u64;
+                        second_reward=third_total_price_amount*1u64/3u64;
+                        third_reward=third_total_price_amount*1u64/3u64;
+                    } 
+                } 
+            }
         }
 
         // 更新轮次状态和资金池剩余金额
-        let left_money:u64 = current_prize_pool.money - first_devied_amount-second_devied_amount-third_devied_amount;
+        let left_money:u64 = current_prize_pool.money - first_reward-second_reward-third_reward;
         let update_prize_pool:PrizePool = PrizePool{
             money:left_money,
             current_round:current_prize_pool.current_round,
@@ -420,7 +692,6 @@ program double_color_ball.aleo {
             current_round_num:current_prize_pool.current_round_num,
         };
         Mapping::set(currentPrizePoolMap,1u8,update_prize_pool);
-
     }
 
 }
