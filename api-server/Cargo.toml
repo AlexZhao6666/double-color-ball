@@ -1,0 +1,36 @@
+[package]
+name = "api-server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+aleo-rpc-sdk={git ="https://github.com/AlexZhao6666/aleo-rpc-sdk.git", branch="main"}
+snarkvm = "0.12.5"
+snarkos-node-env = { git = "https://github.com/AleoHQ/snarkOS.git", branch = "testnet3" }
+snarkos-node-messages = { git = "https://github.com/AleoHQ/snarkOS.git", branch = "testnet3" }
+snarkvm-console-network = "0.12.5"
+
+[dependencies.anyhow]
+version = "1.0.70"
+
+[dependencies.tokio]
+version = "1"
+
+[dependencies.axum]
+version = "0.6"
+features = [ "headers" ]
+
+[dependencies.axum-extra]
+version = "0.7.4"
+features = [ "erased-json" ]
+
+[dependencies.http]
+version = "0.2"
+
+[dependencies.tower-http]
+version = "0.4"
+features = [ "cors", "trace" ]
+
+
