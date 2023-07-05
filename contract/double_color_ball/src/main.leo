@@ -217,7 +217,7 @@ program double_color_ball.aleo {
 
 
         let blue_number:u32= ChaCha::rand_u32();
-        let blue_ball_1:u32 = blue_number.mod(33u32)+1u32;
+        let blue_ball_1:u32 = blue_number.mod(16u32)+1u32;
         
         let current_prize_pool:PrizePool = Mapping::get(currentPrizePoolMap,1u8);
 

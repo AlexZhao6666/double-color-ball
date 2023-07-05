@@ -1,0 +1,26 @@
+body{
+    background-color: #1A1D44;
+}
+#app{
+    width: 80%;
+    min-width: 1200px;
+    margin: 0 auto;
+    border: 1px #FFFFFF solid;
+    background: #FFFFFF;
+    min-height: 100vh;
+    color: #000E48;
+    padding: 20px 20px;
+}
+.winNumberWrap{
+    padding: 15px 0;
+}
+.winNumberWrap .label{
+    font-size: 18px;
+    font-weight: 600;
+}
+.tableBar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+}

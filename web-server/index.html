@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dual-colored-ball</title>
+    <link rel="icon" href="./assets/favicon.ico" />
+    <!-- <link href="./css/reset.css" rel="stylesheet" type="text/css"> -->
+    <link href="./css/main.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
+    <link rel="stylesheet" href="https://unpkg.com/element-plus@2.3.0/dist/index.css" />
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/element-plus@2.3.0/dist/index.full.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="winNumberWrap">
+            <span class="label">上期中奖号码：</span>
+            <span>{{winNumber}}</span>
+        </div>
+        <div class="winNumberList">
+            <div class="tableBar">
+                <span>上期中奖名单 </span>
+                <el-button @click="palyNow" type="primary">玩一把</el-button>
+            </div>
+            <el-table :data="tableData" style="width: 100%">
+                <el-table-column prop="date" label="Date" width="180" ></el-table-column>
+                <el-table-column prop="name" label="Name" width="180" ></el-table-column>
+                <el-table-column prop="address" label="Address" ></el-table-column>
+            </el-table>
+        </div>
+
+        <el-dialog v-model="dialogFormVisible" title="Shipping address" :close-on-click-modal="false" width="500px">
+            <el-form :model="form">
+              <el-form-item label="name" :label-width="formLabelWidth">
+                <el-input v-model.trim="form.name" autocomplete="off"  maxLength="100" />
+              </el-form-item>
+              <el-form-item label="address" :label-width="formLabelWidth">
+                <el-input v-model.trim="form.address" autocomplete="off" maxLength="100" />
+              </el-form-item>
+            </el-form>
+            <template #footer>
+              <span class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取消</el-button>
+                <el-button type="primary" @click="submitHandler">
+                  提交
+                </el-button>
+              </span>
+            </template>
+          </el-dialog>
+
+
+    </div>
+    <script src="./js/main.js"></script>
+</body>
+</html>
