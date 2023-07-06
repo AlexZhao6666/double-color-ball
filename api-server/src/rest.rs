@@ -9,13 +9,15 @@ use http::{Method, StatusCode};
 use tower_http::cors::{Any, CorsLayer};
 use crate::vo::*;
 use crate::vo::PrizePool;
+use crate::binary::*;
 use aleo_rpc_sdk::{AbstractClient, ProgramClient};
-use axum::extract::{DefaultBodyLimit, State};
+use axum::extract::{DefaultBodyLimit, Path, State};
 use axum::response::{IntoResponse, Response};
 use axum_extra::response::ErasedJson;
 use snarkvm::prelude::Value;
 use snarkvm_console_network::Testnet3;
 use tower_http::trace::TraceLayer;
+use axum::Json;
 
 #[derive(Clone)]
 pub struct Rest {
@@ -27,7 +29,7 @@ impl Rest {
     pub fn start(rest_socket: SocketAddr) -> Result<Self> {
         let mut server = Rest{
             rest_socket,
-            node_url:"http://localhost:3030/testnet3/".to_string()
+            node_url:"http://localhost:3030/testnet3".to_string()
         };
         server.spawn_server(rest_socket);
         Ok(server)
@@ -42,6 +44,9 @@ impl Rest {
         let router:Router = {
             Router::new()
                 .route("/prizepool",get(Self::get_price_pool))
+                .route("/lotterydraw/:round",get(Self::get_lottery_Drawing))
+                .route("/winninglist/:round",get(Self::get_winning_list))
+                .route("/ticketpurchase",post(Self::ticketPurchase))
                 .with_state(self.clone())
                 .layer(TraceLayer::new_for_http())
                 .layer(cors)
@@ -57,10 +62,38 @@ impl Rest {
 }
 
 impl Rest {
+    // 获取奖池信息
     pub (crate) async fn get_price_pool(State(rest): State<Self>) -> Result<ErasedJson, RestError> {
-        let program_client = ProgramClient::new("http://localhost:3030/testnet3".to_string());
+        let program_client = ProgramClient::new(rest.node_url);
         let result = program_client.query_mapping_value("double_color_ball.aleo".to_string(),"currentPrizePoolMap".to_string(),"1u8".to_string()).await;
         return Ok(ErasedJson::pretty(result));
+    }
+
+    // 获取摇号信息
+    pub (crate) async fn get_lottery_Drawing(State(rest): State<Self>,Path(round): Path<u32>) -> Result<ErasedJson, RestError> {
+        let program_client = ProgramClient::new(rest.node_url);
+        let result = program_client.query_mapping_value("double_color_ball.aleo".to_string(),"lotteryDrawingMap".to_string(),round.to_string()+"u32").await;
+        return Ok(ErasedJson::pretty(result));
+    }
+
+    // 获取中奖名单
+    pub (crate) async fn get_winning_list(State(rest): State<Self>,Path(round): Path<u32>) -> Result<ErasedJson, RestError> {
+        let program_client = ProgramClient::new(rest.node_url);
+        let result = program_client.query_mapping_value("double_color_ball.aleo".to_string(),"winningListMap".to_string(),round.to_string()+"u32").await;
+        return if let Some(data) = result {
+            Ok(ErasedJson::pretty(data))
+        } else {
+            Ok(ErasedJson::pretty("{}"))
+        }
+
+    }
+
+    // 投注
+    pub (crate) async fn ticketPurchase(State(rest): State<Self>,Json(ticketPurchase): Json<TicketPurchaseInfo>) -> Result<ErasedJson, RestError> {
+        let program_client = BinaryClient::new("/Users/qbql/workspace/snark/double-color-ball/contract/double_color_ball/snarkos".to_string());
+        program_client.execute_ticket_purchase(ticketPurchase);
+        Ok(ErasedJson::pretty("{}"))
+
     }
 }
 

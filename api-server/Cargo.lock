@@ -75,7 +75,7 @@ dependencies = [
 [[package]]
 name = "aleo-rpc-sdk"
 version = "0.1.0"
-source = "git+https://github.com/AlexZhao6666/aleo-rpc-sdk.git?branch=main#b590cadc2a043accef857a2360a615cf497feb27"
+source = "git+https://github.com/AlexZhao6666/aleo-rpc-sdk.git?branch=main#1926f2bff4a5eccfd7dc04485b7da8a0ca483e83"
 dependencies = [
  "indexmap 1.9.3",
  "reqwest",
@@ -611,9 +611,9 @@ checksum = "acbf1af155f9b9ef647e42cdc158db4b64a1b61f743629225fde6f3e0be2a7c7"
 
 [[package]]
 name = "colored"
-version = "2.0.2"
+version = "2.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f45802fdc878e435e966d2f033e4b186a0cb4a83a87f08ca92ebdd59f2ac773"
+checksum = "6f0bd191e39a596125c50f96d9e8b5756839d630cc6cb27741661b12bd7bde63"
 dependencies = [
  "is-terminal",
  "lazy_static",

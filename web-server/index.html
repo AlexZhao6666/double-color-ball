@@ -17,18 +17,37 @@
 <body>
     <div id="app">
         <div class="winNumberWrap">
-            <span class="label">上期中奖号码：</span>
-            <span>{{winNumber}}</span>
+            <span class="label">当前奖池信息：</span>
+            <div>
+              <span>轮次：</span><span>第{{curRound}}轮</span>
+            </div>
+            <div>
+              <span>奖池资金：</span><span>{{poolMoney}}积分</span>
+            </div>
+            <div>
+              <span>状态：</span><span>{{curRoundStatus}}</span>
+            </div>
+            <div>
+              <span>投注数：</span><span>{{curRoundNum}}</span>
+            </div>
         </div>
+
+        <div class="winNumberWrap">
+          <span class="label">本轮摇号结果：</span>
+          <div>
+            <span>红球：</span><span>{{redInfo}}</span> <span>&nbsp;&nbsp;&nbsp;</span><span>蓝球：</span><span>{{blueInfo}}</span>
+          </div>
+      </div>
+
         <div class="winNumberList">
             <div class="tableBar">
-                <span>上期中奖名单 </span>
+                <span>本期中奖名单 </span>
                 <el-button @click="palyNow" type="primary">玩一把</el-button>
             </div>
-            <el-table :data="tableData" style="width: 100%">
-                <el-table-column prop="date" label="Date" width="180" ></el-table-column>
-                <el-table-column prop="name" label="Name" width="180" ></el-table-column>
-                <el-table-column prop="address" label="Address" ></el-table-column>
+            <el-table :data="winningList" style="width: 100%">
+                <el-table-column prop="index" label="奖项" width="180" ></el-table-column>
+                <el-table-column prop="user" label="地址" width="180" ></el-table-column>
+                <el-table-column prop="reward" label="奖金" width="180" ></el-table-column>
             </el-table>
         </div>
 
@@ -50,7 +69,6 @@
               </span>
             </template>
           </el-dialog>
-
 
     </div>
     <script src="./js/main.js"></script>

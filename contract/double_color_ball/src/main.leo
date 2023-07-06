@@ -3,7 +3,9 @@ program double_color_ball.aleo {
 
     // 奖池
     struct PrizePool {
+        // 奖池资金
         money:u64,
+        // 双色球期数
         current_round:u32,
         // 1一开始 2已停止投注 3 以开奖
         current_round_status:u8,
@@ -23,6 +25,7 @@ program double_color_ball.aleo {
         blue_ball_1: u32 
     }
 
+    // 投注
     struct TicketPurchaseInfo {
         user: address,
         round_number: u32, 
@@ -37,6 +40,7 @@ program double_color_ball.aleo {
         blue_ball_1: u32 
     }
 
+    // 投注中奖
     struct TicketPurchasePriceInfo {
         user: address,
         round_number: u32, 
@@ -54,9 +58,10 @@ program double_color_ball.aleo {
 
     }
 
-    struct DrawPriceInfo {
-        seed_min:u32,
-        seed_max:u32,
+    // 中奖名单
+    struct WiningList {
+        first:TicketPurchasePriceInfo,
+        second:TicketPurchasePriceInfo,
     }
 
     // 当前奖池信息
@@ -66,7 +71,7 @@ program double_color_ball.aleo {
     // 轮次对应的参与者
     mapping ticketPurchaseMap: u32 => TicketPurchaseInfo;
     // 中奖名单
-    mapping winningListMap: u32 => TicketPurchasePriceInfo;
+    mapping winningListMap: u32 => WiningList;
 
     transition new_round_lottery_drawing (round:u32) {
         return then finalize(self.caller);
@@ -98,7 +103,7 @@ program double_color_ball.aleo {
         Mapping::set(currentPrizePoolMap,1u8,new_prize_pool);
     }
 
-    // 购买彩票
+    // 投注
     transition ticket_purchase(ticketPurchaseInfo:TicketPurchaseInfo) {
         return then finalize(ticketPurchaseInfo);
     }
@@ -180,6 +185,10 @@ program double_color_ball.aleo {
 
     finalize draw_price(round:u32,caller:address) {
 
+        let current_prize_pool:PrizePool = Mapping::get(currentPrizePoolMap,1u8);
+        if(current_prize_pool.current_round != round) {
+            assert_eq(0u8, 1u8);
+        }
 
         // 摇号
         let red_ball_1:u32 = 0u32;
@@ -219,7 +228,6 @@ program double_color_ball.aleo {
         let blue_number:u32= ChaCha::rand_u32();
         let blue_ball_1:u32 = blue_number.mod(16u32)+1u32;
         
-        let current_prize_pool:PrizePool = Mapping::get(currentPrizePoolMap,1u8);
 
 
         let default_price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
@@ -266,7 +274,8 @@ program double_color_ball.aleo {
             let index_final:u32 = i;
             if (!finish_flag_1 && index_final <= current_prize_pool.current_round_num) {
                 let temp_ticket_purchase:TicketPurchaseInfo = Mapping::get_or_use(ticketPurchaseMap,i,default_ticket);
-                
+                // leo compile bug
+                //let temp_ticket_purchase:TicketPurchaseInfo = Mapping::get(ticketPurchaseMap,i);
                 if (temp_ticket_purchase.round_number != 0u32) {
                 let cur_prize:u8 = 0u8;
                 let red_meet_count:u8 = 0u8;
@@ -433,7 +442,7 @@ program double_color_ball.aleo {
 
         let first_reward:u64 = 0u64;
         let second_reward:u64 = 0u64;
-
+        let third_reward:u64 = 0u64;
 
         let first_total_price_amount:u64 = current_prize_pool.money*(70u64/100u64)*(80u64/100u64);
         let second_total_price_amount:u64 = current_prize_pool.money*(70u64/100u64)*(20u64/100u64);
@@ -457,17 +466,24 @@ program double_color_ball.aleo {
             // 有二等奖中奖
             if(second_price.index == 2u32) {
                 if (second_price.index == 2u32 && third_price.index==10u32)  {
-                    first_reward = second_total_price_amount;
+                    second_reward = second_total_price_amount;
                 } 
                 if (second_price.index == 2u32 && third_price.index==2u32)  {
-                    first_reward = second_total_price_amount*1u64/2u64;
                     second_reward = second_total_price_amount*1u64/2u64;
+                    third_reward = second_total_price_amount*1u64/2u64;
                 } 
             }
         }
 
+        let winingList:WiningList = WiningList{
+            first:default_price_info,
+            second:default_price_info
+        };
+
+
         if(first_price.index != 10u32) {
-            let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+            // 有一等奖
+            let price_info_1:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
                 user: first_price.user,
                 round_number: first_price.round_number, 
                 count:first_price.count, 
@@ -480,14 +496,9 @@ program double_color_ball.aleo {
                 red_ball_6: first_price.red_ball_6,
                 blue_ball_1: first_price.blue_ball_1,
                 reward:first_reward,
-                index:1u32
+                index:first_price.index,
             };
-            Mapping::set(winningListMap,1u32,price_info);
-        }
-
-
-        if(second_price.index != 10u32) {
-            let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+            let price_info_2:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
                 user: second_price.user,
                 round_number: second_price.round_number, 
                 count:second_price.count, 
@@ -500,13 +511,53 @@ program double_color_ball.aleo {
                 red_ball_6: second_price.red_ball_6,
                 blue_ball_1: second_price.blue_ball_1,
                 reward:second_reward,
-                index:1u32
+                index:second_price.index
             };
-            Mapping::set(winningListMap,2u32,price_info);
+            winingList = WiningList{
+                first:price_info_1,
+                second:price_info_2
+            };
+            Mapping::set(winningListMap,current_prize_pool.current_round_num,winingList);
+        } else {
+            let price_info_1:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                user: second_price.user,
+                round_number: second_price.round_number, 
+                count:second_price.count, 
+                gates: second_price.gates,
+                red_ball_1: second_price.red_ball_1,
+                red_ball_2: second_price.red_ball_2,
+                red_ball_3: second_price.red_ball_3,
+                red_ball_4: second_price.red_ball_4,
+                red_ball_5: second_price.red_ball_5,
+                red_ball_6: second_price.red_ball_6,
+                blue_ball_1: second_price.blue_ball_1,
+                reward:second_reward,
+                index:second_price.index
+            };
+            let price_info_2:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
+                user: third_price.user,
+                round_number: third_price.round_number, 
+                count:third_price.count, 
+                gates: third_price.gates,
+                red_ball_1: third_price.red_ball_1,
+                red_ball_2: third_price.red_ball_2,
+                red_ball_3: third_price.red_ball_3,
+                red_ball_4: third_price.red_ball_4,
+                red_ball_5: third_price.red_ball_5,
+                red_ball_6: third_price.red_ball_6,
+                blue_ball_1: third_price.blue_ball_1,
+                reward:third_reward,
+                index:third_price.index,
+            };
+            winingList = WiningList{
+                first:price_info_1,
+                second:price_info_2
+            };
+            Mapping::set(winningListMap,current_prize_pool.current_round_num,winingList);
         }
 
         // 更新轮次状态和资金池剩余金额
-        let left_money:u64 = current_prize_pool.money - first_reward-second_reward;
+        let left_money:u64 = current_prize_pool.money - first_reward-second_reward-third_reward;
         let update_prize_pool:PrizePool = PrizePool{
             money:left_money,
             current_round:current_prize_pool.current_round,
