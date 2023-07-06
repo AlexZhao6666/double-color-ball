@@ -31,8 +31,8 @@ pub struct Rest {
     pub node_url:String,
     pub node_api:String,
     pub latest_transaction_id:Arc<RwLock<String>>,
-    pub snarkos_path:String,
     pub private_key:PrivateKey<Testnet3>,
+    pub binary_client:BinaryClient,
 }
 
 impl Rest {
@@ -42,8 +42,10 @@ impl Rest {
             node_url:baseUrl.clone(),
             node_api:baseUrl+"/testnet3",
             latest_transaction_id: Arc::new(RwLock::new(txId.to_string())),
-            snarkos_path,
             private_key,
+            binary_client:BinaryClient{
+                path: snarkos_path,
+            }
         };
         server.spawn_server(rest_socket);
         Ok(server)
@@ -57,10 +59,14 @@ impl Rest {
 
         let router:Router = {
             Router::new()
+                .route("/round/start/:round",get(Self::execute_new_round_lottery_drawing))
+                .route("/round/ticketpurchase",post(Self::execute_ticket_purchase))
+                .route("/round/stop/:round",get(Self::execute_stop_lottery_drawing))
+                .route("/round/drawprice/:round",get(Self::execute_draw_price))
                 .route("/prizepool",get(Self::get_price_pool))
                 .route("/lotterydraw/:round",get(Self::get_lottery_Drawing))
                 .route("/winninglist/:round",get(Self::get_winning_list))
-                .route("/ticketpurchase",post(Self::ticketPurchase))
+
                 .with_state(self.clone())
                 .layer(TraceLayer::new_for_http())
                 .layer(cors)
@@ -76,6 +82,39 @@ impl Rest {
 }
 
 impl Rest {
+
+    // 开启新一期
+    pub (crate) async fn execute_new_round_lottery_drawing(State(rest): State<Self>,Path(round): Path<u32>) -> Result<ErasedJson, RestError> {
+        // 获取最新的transaction
+        let record_str = rest.queryLatestRecord().await;
+        rest.clone().binary_client.execute_new_round_lottery_drawing(round,record_str,rest).await;
+        Ok(ErasedJson::pretty("{}"))
+    }
+
+    // 投注
+    pub (crate) async fn execute_ticket_purchase(State(rest): State<Self>,Json(ticketPurchase): Json<TicketPurchaseInfo>) -> Result<ErasedJson, RestError> {
+        // 获取最新的transaction
+        let record_str = rest.queryLatestRecord().await;
+        rest.clone().binary_client.execute_ticket_purchase(ticketPurchase,record_str,rest).await;
+        Ok(ErasedJson::pretty("{}"))
+    }
+
+    // 停止投注
+    pub (crate) async fn execute_stop_lottery_drawing(State(rest): State<Self>,Path(round): Path<u32>) -> Result<ErasedJson, RestError> {
+        // 获取最新的transaction
+        let record_str = rest.queryLatestRecord().await;
+        rest.clone().binary_client.execute_stop_lottery_drawing(round,record_str,rest).await;
+        Ok(ErasedJson::pretty("{}"))
+    }
+
+    // 开奖
+    pub (crate) async fn execute_draw_price(State(rest): State<Self>,Path(round): Path<u32>) -> Result<ErasedJson, RestError> {
+        // 获取最新的transaction
+        let record_str = rest.queryLatestRecord().await;
+        rest.clone().binary_client.execute_draw_price(round,record_str,rest).await;
+        Ok(ErasedJson::pretty("{}"))
+    }
+
     // 获取奖池信息
     pub (crate) async fn get_price_pool(State(rest): State<Self>) -> Result<ErasedJson, RestError> {
         let program_client = ProgramClient::new(rest.node_api);
@@ -102,18 +141,9 @@ impl Rest {
 
     }
 
-    // 投注
-    pub (crate) async fn ticketPurchase(State(rest): State<Self>,Json(ticketPurchase): Json<TicketPurchaseInfo>) -> Result<ErasedJson, RestError> {
-        // 获取最新的transaction
-        let record_str = rest.queryLatestRecord().await;
-        let program_client = BinaryClient::new(rest.snarkos_path.clone());
-        program_client.execute_ticket_purchase(ticketPurchase,record_str,rest).await;
-        Ok(ErasedJson::pretty("{}"))
-    }
-
     // 查询最新交易对应的解密后的record
     pub async fn queryLatestRecord(&self) -> String{
-        let transaction_client = TransactionClient::new(self.node_url.clone());
+        let transaction_client = TransactionClient::new(self.node_api.clone());
         let latest_id = self.latest_transaction_id.read().await;
         info!("最新交易id为:{}",latest_id.clone());
         let transactions = transaction_client.query_transaction_by_id(latest_id.clone()).await;
