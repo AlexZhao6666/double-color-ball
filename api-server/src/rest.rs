@@ -1,6 +1,8 @@
 use std::net::{IpAddr, SocketAddr};
 use std::str::FromStr;
-use anyhow::Result;
+use std::string::ToString;
+use std::sync::{Arc};
+use anyhow::{bail, Result};
 use axum::Router;
 use axum::routing::get;
 use axum::routing::post;
@@ -10,26 +12,38 @@ use tower_http::cors::{Any, CorsLayer};
 use crate::vo::*;
 use crate::vo::PrizePool;
 use crate::binary::*;
-use aleo_rpc_sdk::{AbstractClient, ProgramClient};
+use aleo_rpc_sdk::{AbstractClient, ProgramClient, TransactionClient};
 use axum::extract::{DefaultBodyLimit, Path, State};
 use axum::response::{IntoResponse, Response};
 use axum_extra::response::ErasedJson;
-use snarkvm::prelude::Value;
+use snarkvm::prelude::{Ciphertext, PrivateKey, Record, Transaction, Value, ViewKey};
 use snarkvm_console_network::Testnet3;
 use tower_http::trace::TraceLayer;
 use axum::Json;
+use tokio::sync::RwLock;
+use tracing::info;
+
+const PROGRAM_ID: &str ="double_color_ball.aleo";
 
 #[derive(Clone)]
 pub struct Rest {
-    rest_socket:SocketAddr,
-    node_url:String,
+    pub rest_socket:SocketAddr,
+    pub node_url:String,
+    pub node_api:String,
+    pub latest_transaction_id:Arc<RwLock<String>>,
+    pub snarkos_path:String,
+    pub private_key:PrivateKey<Testnet3>,
 }
 
 impl Rest {
-    pub fn start(rest_socket: SocketAddr) -> Result<Self> {
+    pub fn start(rest_socket: SocketAddr,baseUrl:String,txId:String,snarkos_path:String,private_key:PrivateKey<Testnet3>) -> Result<Self> {
         let mut server = Rest{
             rest_socket,
-            node_url:"http://localhost:3030/testnet3".to_string()
+            node_url:baseUrl.clone(),
+            node_api:baseUrl+"/testnet3",
+            latest_transaction_id: Arc::new(RwLock::new(txId.to_string())),
+            snarkos_path,
+            private_key,
         };
         server.spawn_server(rest_socket);
         Ok(server)
@@ -64,22 +78,22 @@ impl Rest {
 impl Rest {
     // 获取奖池信息
     pub (crate) async fn get_price_pool(State(rest): State<Self>) -> Result<ErasedJson, RestError> {
-        let program_client = ProgramClient::new(rest.node_url);
-        let result = program_client.query_mapping_value("double_color_ball.aleo".to_string(),"currentPrizePoolMap".to_string(),"1u8".to_string()).await;
+        let program_client = ProgramClient::new(rest.node_api);
+        let result = program_client.query_mapping_value(PROGRAM_ID.to_string(),"currentPrizePoolMap".to_string(),"1u8".to_string()).await;
         return Ok(ErasedJson::pretty(result));
     }
 
     // 获取摇号信息
     pub (crate) async fn get_lottery_Drawing(State(rest): State<Self>,Path(round): Path<u32>) -> Result<ErasedJson, RestError> {
-        let program_client = ProgramClient::new(rest.node_url);
-        let result = program_client.query_mapping_value("double_color_ball.aleo".to_string(),"lotteryDrawingMap".to_string(),round.to_string()+"u32").await;
+        let program_client = ProgramClient::new(rest.node_api);
+        let result = program_client.query_mapping_value(PROGRAM_ID.to_string(),"lotteryDrawingMap".to_string(),round.to_string()+"u32").await;
         return Ok(ErasedJson::pretty(result));
     }
 
     // 获取中奖名单
     pub (crate) async fn get_winning_list(State(rest): State<Self>,Path(round): Path<u32>) -> Result<ErasedJson, RestError> {
-        let program_client = ProgramClient::new(rest.node_url);
-        let result = program_client.query_mapping_value("double_color_ball.aleo".to_string(),"winningListMap".to_string(),round.to_string()+"u32").await;
+        let program_client = ProgramClient::new(rest.node_api);
+        let result = program_client.query_mapping_value(PROGRAM_ID.to_string(),"winningListMap".to_string(),round.to_string()+"u32").await;
         return if let Some(data) = result {
             Ok(ErasedJson::pretty(data))
         } else {
@@ -90,9 +104,36 @@ impl Rest {
 
     // 投注
     pub (crate) async fn ticketPurchase(State(rest): State<Self>,Json(ticketPurchase): Json<TicketPurchaseInfo>) -> Result<ErasedJson, RestError> {
-        let program_client = BinaryClient::new("/Users/qbql/workspace/snark/double-color-ball/contract/double_color_ball/snarkos".to_string());
-        program_client.execute_ticket_purchase(ticketPurchase);
+        // 获取最新的transaction
+        let record_str = rest.queryLatestRecord().await;
+        let program_client = BinaryClient::new(rest.snarkos_path.clone());
+        program_client.execute_ticket_purchase(ticketPurchase,record_str,rest).await;
         Ok(ErasedJson::pretty("{}"))
+    }
+
+    // 查询最新交易对应的解密后的record
+    pub async fn queryLatestRecord(&self) -> String{
+        let transaction_client = TransactionClient::new(self.node_url.clone());
+        let latest_id = self.latest_transaction_id.read().await;
+        info!("最新交易id为:{}",latest_id.clone());
+        let transactions = transaction_client.query_transaction_by_id(latest_id.clone()).await;
+        let fee = transactions.fee_transition();
+        if let Some(info) = fee {
+            let first_output = info.transition().outputs().get(0);
+            if let Some(finalInfo) = first_output{
+                let ciphertext = finalInfo.record().unwrap().1.to_string();
+                let ciphertext_record = Record::<Testnet3, Ciphertext<Testnet3>>::from_str(ciphertext.as_str()).unwrap();
+                let view_key = ViewKey::try_from(self.private_key).unwrap();
+                match ciphertext_record.decrypt(&view_key) {
+                    Ok(plaintext_record) => return plaintext_record.to_string(),
+                    Err(e) => panic!("record解密失败"),
+                };
+            } else {
+                panic!("查询record出错")
+            }
+        } else {
+            panic!("查询record出错")
+        }
 
     }
 }

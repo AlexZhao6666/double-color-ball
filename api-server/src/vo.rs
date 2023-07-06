@@ -1,3 +1,6 @@
+use serde::Serialize;
+use serde::Deserialize;
+
 pub struct PrizePool {
     money:u64,
     current_round:u32,
@@ -7,16 +10,17 @@ pub struct PrizePool {
     current_round_num:u32,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct TicketPurchaseInfo {
-    user: String,
-    round_number: u32,
-    count:u32,
-    gates: u64,
-    red_ball_1: u32,
-    red_ball_2: u32,
-    red_ball_3: u32,
-    red_ball_4: u32,
-    red_ball_5: u32,
-    red_ball_6: u32,
-    blue_ball_1: u32
+    pub user: String,
+    pub round_number: u32,
+    pub count:u32,
+    pub gates: u64,
+    pub red_ball_1: u32,
+    pub red_ball_2: u32,
+    pub red_ball_3: u32,
+    pub red_ball_4: u32,
+    pub red_ball_5: u32,
+    pub red_ball_6: u32,
+    pub blue_ball_1: u32
 }
