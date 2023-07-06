@@ -58,8 +58,14 @@ createApp({
             dialogFormVisible:false,
             formLabelWidth:'100px',
             form:{
-                name:'',
-                address:'',
+                user:'',
+                red_ball_1:'',
+                red_ball_2:'',
+                red_ball_3:'',
+                red_ball_4:'',
+                red_ball_5:'',
+                red_ball_6:'',
+                blue_ball_1:'',
             }
         }
     },
@@ -129,6 +135,45 @@ createApp({
         },
         getWinningList(){
             axiosInstance.get("http://127.0.0.1:5111/winninglist/"+this.curRound).then(data => {
+                if(!isEmptyObject(data)) {
+                 
+                    if(data.first.index != '10') {
+                        this.winningList.push(data.first);
+                    }
+                    if(data.second.index != '10') {
+                        this.winningList.push(data.second);
+                    }
+                } else {
+                    // 无人中奖
+                }
+    
+            }).catch(err => {
+                //alert(JSON.stringify(err));
+            })
+        },
+        doTicketPurchase(){
+            if(this.form.user.length <= 0 || this.form.red_ball_1.length <=0 || this.form.red_ball_2.length <=0 || this.form.red_ball_3.length <=0 || this.form.red_ball_4.length <=0 || this.form.red_ball_5.length <=0 || this.form.red_ball_6.length <=0 || this.form.blue_ball_1.length <=0 ) {
+                alert("投注信息不完整");
+                return false;
+            }
+            var data = {
+                user:this.form.user,
+                round_number:this.curRound,
+                count:1,
+                gates:100000000,
+                red_ball_1:parseInt(this.form.red_ball_1),
+                red_ball_2:parseInt(this.form.red_ball_2),
+                red_ball_3:parseInt(this.form.red_ball_3),
+                red_ball_4:parseInt(this.form.red_ball_4),
+                red_ball_5:parseInt(this.form.red_ball_5),
+                red_ball_6:parseInt(this.form.red_ball_6),
+                blue_ball_1:parseInt(this.form.blue_ball_1),
+            }
+            axiosInstance.post("http://127.0.0.1:5111/ticketpurchase",data,{
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+            }).then(data => {
                 if(!isEmptyObject(data)) {
                  
                     if(data.first.index != '10') {
