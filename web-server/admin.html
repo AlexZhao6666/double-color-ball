@@ -15,22 +15,23 @@
     <script src="https://unpkg.com/element-plus@2.3.0/dist/index.full.js"></script>
 </head>
 <body>
-    <div id="app">
+<div id="app" >
+    <div v-loading="loading">
         <div class="winNumberWrap">
-          <span class="label">当前奖池信息：</span>
-          <div>
-            <span>轮次：</span><span>第{{curRound}}期</span>
-          </div>
-          <div>
-            <span>奖池资金：</span><span>{{poolMoney}}积分</span>
-          </div>
-          <div>
-            <span>状态：</span><span>{{curRoundStatus}}</span>
-          </div>
-          <div>
-            <span>投注数：</span><span>{{curRoundNum}}</span>
-          </div>
-      </div>
+            <span class="label">当前奖池信息：</span>
+            <div>
+                <span>轮次：</span><span>第{{curRound}}期</span>
+            </div>
+            <div>
+                <span>奖池资金：</span><span>{{poolMoney}}积分</span>
+            </div>
+            <div>
+                <span>状态：</span><span>{{curRoundStatus}}</span>
+            </div>
+            <div>
+                <span>投注数：</span><span>{{curRoundNum}}</span>
+            </div>
+        </div>
         <div class="winNumberList">
             <div class="tableBar">
                 <el-button @click="openNewRound()" type="primary">开启新一期</el-button>
@@ -40,6 +41,7 @@
         </div>
 
     </div>
-    <script src="./js/admin.js"></script>
+</div>
+<script src="./js/admin.js"></script>
 </body>
 </html>

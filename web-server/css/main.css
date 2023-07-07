@@ -1,26 +1,97 @@
 body{
     background-color: #1A1D44;
+    font-family: "微软雅黑", sans-serif, inherit; /* 用 ascii 字符表示，使得在任何编码下都无问题 */
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.04);
 }
 #app{
-    width: 80%;
-    min-width: 1200px;
-    margin: 0 auto;
-    border: 1px #FFFFFF solid;
+
     background: #FFFFFF;
     min-height: 100vh;
     color: #000E48;
-    padding: 20px 20px;
+    /* padding: 20px 20px; */
 }
+.content{
+    width: 80%;
+    margin: 0 auto;
+}
+
 .winNumberWrap{
     padding: 15px 0;
 }
 .winNumberWrap .label{
     font-size: 18px;
     font-weight: 600;
+    line-height: 36px;
 }
+.row{
+    padding: 10px 0;
+}
+.flex-start{
+    display: flex;
+    flex-wrap: wrap;
+}
+.ball{
+    border-radius: 50%;
+    color: #FFFFFF;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    font-style: normal;
+    margin-right: 10px;
+    box-shadow: 4px 2px 4px 0px rgba(0,0,0,0.5);
+    margin: 0 5px 5px 0;
+}
+.red-ball{
+    background-color: #DC143C;
+}
+.blue-ball{
+    background-color: #4169E1;
+    
+}
+.grey-ball{
+    background-color: #808080;
+}
+.pointer{
+    cursor:pointer
+}
+
+
 .tableBar{
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px 0;
+}
+.header{
+    text-align: center;
+    font-size: 24px;
+    font-weight: 900;
+    background-color: #1A1D44;
+    color: #FFFFFF;
+    height: 60px;
+    line-height: 60px;
+    background-image: url(../assets/images/aleo_logo.png);
+    background-repeat: no-repeat;
+    background-size: auto 30px;
+    background-position: 10% 15px;
+}
+
+/* 视口宽度最小为320px，最大为640px时，呈现样式 */
+@media (min-width: 320px) and (max-width: 640px) {
+    #app{
+        width: 100%;
+        background: #FFFFFF;
+        min-height: 100vh;
+        color: #000E48;
+    }
+    .header{
+        font-size: 16px;
+        text-align: right;
+        padding-right: 10%;
+    }
+    
 }

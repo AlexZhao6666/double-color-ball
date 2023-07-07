@@ -5,39 +5,39 @@ const axiosInstance = axios.create();
 
 // 请求拦截器
 axiosInstance.interceptors.request.use(
-  function (config) {
-    // 在发送请求之前做一些处理
-    // 可以修改请求配置，添加头部信息等
-    console.log("请求拦截器");
-    return config;
-  },
-  function (error) {
-    // 处理请求错误
-    return Promise.reject(error);
-  }
+    function (config) {
+        // 在发送请求之前做一些处理
+        // 可以修改请求配置，添加头部信息等
+        console.log("请求拦截器");
+        return config;
+    },
+    function (error) {
+        // 处理请求错误
+        return Promise.reject(error);
+    }
 );
 
 // 响应拦截器
 axiosInstance.interceptors.response.use(
-  function (response) {
-    if(response.status == 200) {
-        var data_str = response.data;
-        const fieldName = "user";
-        data_str = data_str.replace(/(\w+)(?=:)/g, '"$1"').replace(/u64|u32|u8/g, '').replace(
-            new RegExp(`"${fieldName}":\\s*([^,}\\s]+)`, "g"),
-            `"${fieldName}": "$1"`
-          );;
-        console.log(data_str)
-        var jsonObj = JSON.parse(data_str);
-        return jsonObj; 
-    } else {
-        alert("请求失败");
+    function (response) {
+        if(response.status == 200) {
+            var data_str = response.data;
+            const fieldName = "user";
+            data_str = data_str.replace(/(\w+)(?=:)/g, '"$1"').replace(/u64|u32|u8/g, '').replace(
+                new RegExp(`"${fieldName}":\\s*([^,}\\s]+)`, "g"),
+                `"${fieldName}": "$1"`
+            );;
+            console.log(data_str)
+            var jsonObj = JSON.parse(data_str);
+            return jsonObj;
+        } else {
+            alert("请求失败");
+        }
+    },
+    function (error) {
+        // 处理响应错误
+        return Promise.reject(error);
     }
-  },
-  function (error) {
-    // 处理响应错误
-    return Promise.reject(error);
-  }
 );
 
 function isEmptyObject(obj) {
@@ -47,6 +47,7 @@ function isEmptyObject(obj) {
 createApp({
     data() {
         return {
+            loading:false,
             message: 'Hello Vue!',
             curRound: 0,
             poolMoney: 0,
@@ -81,8 +82,9 @@ createApp({
             console.log('form',this.form);
         },
         getPricePoolData(){
-            axiosInstance.get("http://127.0.0.1:5111/prizepool").then(data => {
 
+            axiosInstance.get("http://192.168.2.28:5111/prizepool").then(data => {
+                this.loading = false
                 const curPool = data;
                 this.curRound = curPool.current_round;
                 this.poolMoney = curPool.money;
@@ -92,42 +94,46 @@ createApp({
                     this.curRoundStatus = "待开奖";
                 } else if (curPool.current_round_status== 3) {
                     this.curRoundStatus = "已开奖";
-                    this.getLotteryDrawingData(); 
+                    this.getLotteryDrawingData();
                     this.getWinningList();
                 }
                 this.curRoundNum = curPool.current_round_num;
 
             }).catch(err => {
+                this.loading = false
                 alert("请在本机5111端口启动后端服务")
             })
         },
         openNewRound() {
-            axiosInstance.get("http://127.0.0.1:5111/round/start/"+(this.curRound+1)).then(data => {
+            axiosInstance.get("http://192.168.2.28:5111/round/start/"+(this.curRound+1)).then(data => {
+                this.loading = false
 
                 alert("开启成功");
 
             }).catch(err => {
+                this.loading = false
                 alert("开启失败")
-            })      
+            })
         },
         stopCurRound() {
-            axiosInstance.get("http://127.0.0.1:5111/round/stop/"+this.curRound).then(data => {
-
+            axiosInstance.get("http://192.168.2.28:5111/round/stop/"+this.curRound).then(data => {
+                this.loading = false
                 alert("停止投注成功");
 
             }).catch(err => {
+                this.loading = false
                 alert("停止投注失败")
-            })      
+            })
         },
         priceCurRound() {
-            axiosInstance.get("http://127.0.0.1:5111/round/drawprice/"+this.curRound).then(data => {
-
+            axiosInstance.get("http://192.168.2.28:5111/round/drawprice/"+this.curRound).then(data => {
+                this.loading = false
                 alert("开奖成功");
 
             }).catch(err => {
+                this.loading = false
                 alert("开奖失败")
-            })      
+            })
         },
     },
 }).use(ElementPlus).mount('#app')
-

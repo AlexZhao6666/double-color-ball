@@ -3,9 +3,9 @@
     "version": "0.0.1",
     "description": "double color ball",
     "development": {
-        "private_key": "APrivateKey1zkp8CZNn3yeCseEtxuVPbDCwSyhGW6yZKUYKfgXmcpoGPWH",
-        "view_key": "AViewKey1mSnpFFC8Mj4fXbK5YiWgZ3mjiV8CxA79bYNa8ymUpTrw",
-        "address": "aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px"
+        "private_key": "APrivateKey1zkpBf5FKHk7uxo3a1dE5FB9988RQBdDxjvrBX93T1aqpF1a",
+        "view_key": "AViewKey1s6Q2EmiYWQ7VzP3KUDUdawmshJWa3oB2qXRHXh55D2Km",
+        "address": "aleo1zjk0syd9jfkedc2tjklhcfc4qqmnyep3v393twywuya08yh4dg8qzw8djx"
     },
     "license": "MIT"
 }

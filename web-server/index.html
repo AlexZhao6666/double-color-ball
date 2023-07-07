@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dual-colored-ball</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=0">
+    <title>double-color-ball</title>
     <link rel="icon" href="./assets/favicon.ico" />
     <!-- <link href="./css/reset.css" rel="stylesheet" type="text/css"> -->
     <link href="./css/main.css" rel="stylesheet" type="text/css">
@@ -15,29 +15,47 @@
     <script src="https://unpkg.com/element-plus@2.3.0/dist/index.full.js"></script>
 </head>
 <body>
-    <div id="app">
+<div id="app">
+    <header class="header">
+        Double Color Ball & Aleo
+    </header>
+    <div class="content"  v-loading="loading">
         <div class="winNumberWrap">
             <span class="label">当前奖池信息：</span>
-            <div>
-              <span>轮次：</span><span>第{{curRound}}轮</span>
+            <div class="row">
+                <span>轮次：</span><span>第{{curRound}}轮</span>
             </div>
-            <div>
-              <span>奖池资金：</span><span>{{poolMoney}}积分</span>
+            <div class="row">
+                <span>奖池资金：</span><span>{{poolMoney}}积分</span>
             </div>
-            <div>
-              <span>状态：</span><span>{{curRoundStatus}}</span>
+            <div class="row">
+                <span>状态：</span><span>{{curRoundStatus}}</span>
             </div>
-            <div>
-              <span>投注数：</span><span>{{curRoundNum}}</span>
+            <div class="row">
+                <span>投注数：</span><span>{{curRoundNum}}</span>
             </div>
         </div>
 
         <div class="winNumberWrap">
-          <span class="label">本轮摇号结果：</span>
-          <div>
-            <span>红球：</span><span>{{redInfo}}</span> <span>&nbsp;&nbsp;&nbsp;</span><span>蓝球：</span><span>{{blueInfo}}</span>
-          </div>
-      </div>
+            <span class="label">本轮摇号结果：</span>
+            <div class="row flex-start">
+                <!-- <span>红球：</span><span>{{redInfo}}</span> -->
+                <span>红球：</span>
+                <div class="flex-start" v-if="redInfoList && redInfoList.length">
+                    <i class="ball red-ball" v-for="(item,index) in redInfoList" :key="index">
+                        {{item}}
+                    </i>
+                </div>
+            </div>
+            <div class="row flex-start">
+                <span>蓝球：</span>
+                <div class="flex-start" v-if="blueInfo">
+                    <i class="ball blue-ball" >
+                        {{blueInfo}}
+                    </i>
+                </div>
+            </div>
+        </div>
 
         <div class="winNumberList">
             <div class="tableBar">
@@ -45,50 +63,59 @@
                 <el-button @click="palyNow" type="primary">玩一把</el-button>
             </div>
             <el-table :data="winningList" style="width: 100%">
-                <el-table-column prop="index" label="奖项" width="180" ></el-table-column>
-                <el-table-column prop="user" label="地址" width="180" ></el-table-column>
-                <el-table-column prop="reward" label="奖金" width="180" ></el-table-column>
+                <el-table-column prop="index" label="奖项" min-width="180" ></el-table-column>
+                <el-table-column prop="user" label="地址" min-width="180" ></el-table-column>
+                <el-table-column prop="reward" label="奖金" min-width="180" ></el-table-column>
             </el-table>
         </div>
+    </div>
 
-        <el-dialog v-model="dialogFormVisible" title="投注" :close-on-click-modal="false" width="500px">
-            <el-form :model="form">
-              <el-form-item label="aleo账户地址" :label-width="formLabelWidth">
+
+    <el-dialog v-if="dialogFormVisible" v-model="dialogFormVisible" title="投注" :close-on-click-modal="false" :width="isPc()? '768px' : '100%'">
+        <el-form :model="form" v-loading="loading">
+            <el-form-item label="aleo账户地址" :label-width="formLabelWidth">
                 <el-input v-model.trim="form.user" autocomplete="off" maxLength="100" />
-              </el-form-item>
-              <el-form-item label="红球1" :label-width="formLabelWidth">
-                <el-input v-model.trim="form.red_ball_1" autocomplete="off" maxLength="100" type="number"/>
-              </el-form-item>
-              <el-form-item label="红球2" :label-width="formLabelWidth">
-                <el-input v-model.trim="form.red_ball_2" autocomplete="off" maxLength="100" type="number" />
-              </el-form-item>
-              <el-form-item label="红球3" :label-width="formLabelWidth">
-                <el-input v-model.trim="form.red_ball_3" autocomplete="off" maxLength="100" type="number" />
-              </el-form-item>
-              <el-form-item label="红球4" :label-width="formLabelWidth">
-                <el-input v-model.trim="form.red_ball_4" autocomplete="off" maxLength="100" type="number" />
-              </el-form-item>
-              <el-form-item label="红球5" :label-width="formLabelWidth">
-                <el-input v-model.trim="form.red_ball_5" autocomplete="off" maxLength="100" type="number" />
-              </el-form-item>
-              <el-form-item label="红球6" :label-width="formLabelWidth">
-                <el-input v-model.trim="form.red_ball_6" autocomplete="off" maxLength="100" type="number" />
-              </el-form-item>
-              <el-form-item label="蓝球1" :label-width="formLabelWidth">
-                <el-input v-model.trim="form.blue_ball_1" autocomplete="off" maxLength="100" type="number"/>
-              </el-form-item>
-            </el-form>
-            <template #footer>
+            </el-form-item>
+            <el-form-item label="选择红球" :label-width="formLabelWidth">
+                <div class="flex-start" >
+                    <i @click="chooeRedBall(item)" class="ball red-ball pointer"  :class="{'grey-ball':hasSelectdRed(item)}" v-for="item in redMaxNumb" :key="item">
+                        {{item}}
+                    </i>
+                </div>
+            </el-form-item>
+            <el-form-item label="已选红球" :label-width="formLabelWidth">
+                <div class="flex-start" >
+                    <i class="ball red-ball pointer"   v-for="item in selectedRedBallList" :key="item">
+                        {{item}}
+                    </i>
+                </div>
+            </el-form-item>
+            <el-form-item label="选择蓝球" :label-width="formLabelWidth">
+                <div class="flex-start" >
+                    <i @click="chooeBlueBall(item)" class="ball blue-ball"  :class="{'grey-ball':hasSelectdBlue(item)}" v-for="item in blueMaxNumb" :key="item">
+                        {{item}}
+                    </i>
+                </div>
+            </el-form-item>
+            <el-form-item label="已选蓝球" :label-width="formLabelWidth">
+                <div class="flex-start" >
+                    <i class="ball blue-ball" v-for="item in selectedBlueBallList" :key="item">
+                        {{item}}
+                    </i>
+                </div>
+            </el-form-item>
+        </el-form>
+        <template #footer>
               <span class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取消</el-button>
-                <el-button type="primary" @click="doTicketPurchase()">
+                <el-button type="primary" :loading="loading" @click="doTicketPurchase()">
                   提交
                 </el-button>
               </span>
-            </template>
-          </el-dialog>
+        </template>
+    </el-dialog>
 
-    </div>
-    <script src="./js/main.js"></script>
+</div>
+<script src="./js/main.js"></script>
 </body>
 </html>
