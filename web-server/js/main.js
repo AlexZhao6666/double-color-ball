@@ -153,7 +153,7 @@ createApp({
 
                 const curPool = data;
                 this.curRound = curPool.current_round;
-                this.poolMoney = curPool.money;
+                this.poolMoney = curPool.money/1000000;
                 if(curPool.current_round_status== 1) {
                     this.curRoundStatus = "投注中";
                 } else if (curPool.current_round_status== 2) {
