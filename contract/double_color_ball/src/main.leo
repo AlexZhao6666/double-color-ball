@@ -199,7 +199,7 @@ program double_color_ball.aleo {
         let red_ball_6:u32 = 0u32;
         let mod_number:u32 = 33u32;
         let finish:bool = false;
-        for i:u32 in 0u32..30u32 {
+        for i:u32 in 0u32..100u32 {
             let val:u32 = ChaCha::rand_u32();
             if (!finish){
                 let rand:u32 = val.mod(33u32)+1u32;
@@ -270,7 +270,7 @@ program double_color_ball.aleo {
             blue_ball_1: 0u32 
         };
 
-        for i:u32 in 1u32..10u32 {
+        for i:u32 in 1u32..100u32 {
             let index_final:u32 = i;
             if (!finish_flag_1 && index_final <= current_prize_pool.current_round_num) {
                 let temp_ticket_purchase:TicketPurchaseInfo = Mapping::get_or_use(ticketPurchaseMap,i,default_ticket);
