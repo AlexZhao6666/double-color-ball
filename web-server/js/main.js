@@ -2,6 +2,7 @@ const { createApp } = Vue
 
 // 创建 Axios 实例
 const axiosInstance = axios.create();
+const apiUrl = "http://192.168.2.28:5111";
 
 // 请求拦截器
 axiosInstance.interceptors.request.use(
@@ -148,7 +149,7 @@ createApp({
             console.log('form',this.form);
         },
         getPricePoolData(){
-            axiosInstance.get("http://192.168.2.28:5111/prizepool").then(data => {
+            axiosInstance.get(apiUrl+"/prizepool").then(data => {
 
                 const curPool = data;
                 this.curRound = curPool.current_round;
@@ -171,7 +172,7 @@ createApp({
         getLotteryDrawingData(){
             this.redInfo = '';
             this.blueInfo = '';
-            axiosInstance.get("http://192.168.2.28:5111/lotterydraw/"+this.curRound).then(data => {
+            axiosInstance.get(apiUrl+"/lotterydraw/"+this.curRound).then(data => {
                 var balls = new Array();
                 balls.push(parseInt(data.red_ball_1));
                 balls.push(parseInt(data.red_ball_2));
@@ -201,7 +202,7 @@ createApp({
             })
         },
         getWinningList(){
-            axiosInstance.get("http://192.168.2.28:5111/winninglist/"+this.curRound).then(data => {
+            axiosInstance.get(apiUrl+"/winninglist/"+this.curRound).then(data => {
                 if(!isEmptyObject(data)) {
 
                     if(data.first.index != '10') {
@@ -242,7 +243,7 @@ createApp({
                 ...this.form
             }
             this.loading = true
-            axiosInstance.post("http://192.168.2.28:5111/round/ticketpurchase",data,{
+            axiosInstance.post(apiUrl+"/round/ticketpurchase",data,{
                 headers: {
                     'Content-Type': 'application/json'
                 }

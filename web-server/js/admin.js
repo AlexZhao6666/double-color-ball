@@ -2,6 +2,7 @@ const { createApp } = Vue
 
 // 创建 Axios 实例
 const axiosInstance = axios.create();
+const apiUrl = "http://192.168.2.28:5111";
 
 // 请求拦截器
 axiosInstance.interceptors.request.use(
@@ -83,7 +84,7 @@ createApp({
         },
         getPricePoolData(){
 
-            axiosInstance.get("http://192.168.2.28:5111/prizepool").then(data => {
+            axiosInstance.get(apiUrl+"/prizepool").then(data => {
                 this.loading = false
                 const curPool = data;
                 this.curRound = curPool.current_round;
@@ -94,8 +95,6 @@ createApp({
                     this.curRoundStatus = "待开奖";
                 } else if (curPool.current_round_status== 3) {
                     this.curRoundStatus = "已开奖";
-                    this.getLotteryDrawingData();
-                    this.getWinningList();
                 }
                 this.curRoundNum = curPool.current_round_num;
 
@@ -105,7 +104,8 @@ createApp({
             })
         },
         openNewRound() {
-            axiosInstance.get("http://192.168.2.28:5111/round/start/"+(this.curRound+1)).then(data => {
+            this.loading = true
+            axiosInstance.get(apiUrl+"/round/start/"+(this.curRound+1)).then(data => {
                 this.loading = false
 
                 alert("开启成功");
@@ -116,7 +116,8 @@ createApp({
             })
         },
         stopCurRound() {
-            axiosInstance.get("http://192.168.2.28:5111/round/stop/"+this.curRound).then(data => {
+            this.loading = true
+            axiosInstance.get(apiUrl+"/round/stop/"+this.curRound).then(data => {
                 this.loading = false
                 alert("停止投注成功");
 
@@ -126,7 +127,8 @@ createApp({
             })
         },
         priceCurRound() {
-            axiosInstance.get("http://192.168.2.28:5111/round/drawprice/"+this.curRound).then(data => {
+            this.loading = true
+            axiosInstance.get(apiUrl+"/round/drawprice/"+this.curRound).then(data => {
                 this.loading = false
                 alert("开奖成功");
 
