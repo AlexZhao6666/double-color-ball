@@ -32,7 +32,7 @@ axiosInstance.interceptors.response.use(
             var jsonObj = JSON.parse(data_str);
             return jsonObj;
         } else {
-            alert("请求失败");
+            alert("网络异常");
         }
     },
     function (error) {
@@ -166,7 +166,7 @@ createApp({
                 this.curRoundNum = curPool.current_round_num;
 
             }).catch(err => {
-                alert("请在本机5111端口启动后端服务")
+                alert("网络异常");
             })
         },
         getLotteryDrawingData(){
@@ -198,7 +198,7 @@ createApp({
                 }
 
             }).catch(err => {
-                alert("请在本机5111端口启动后端服务")
+                alert("网络异常");
             })
         },
         getWinningList(){
@@ -250,6 +250,7 @@ createApp({
             }).then(data => {
                 this.loading = false
                 alert('投注成功')
+                window.location.reload();
                 this.resetDialog()
                 if(!isEmptyObject(data)) {
                     if(data.first.index != '10') {
@@ -265,6 +266,7 @@ createApp({
             }).catch(err => {
                 alert('投注失败')
                 this.loading = false
+                window.location.reload();
                 //alert(JSON.stringify(err));
             })
         },

@@ -32,7 +32,7 @@ axiosInstance.interceptors.response.use(
             var jsonObj = JSON.parse(data_str);
             return jsonObj;
         } else {
-            alert("请求失败");
+            alert("网络异常");
         }
     },
     function (error) {
@@ -100,19 +100,20 @@ createApp({
 
             }).catch(err => {
                 this.loading = false
-                alert("请在本机5111端口启动后端服务")
+                alert("网络异常");
             })
         },
         openNewRound() {
             this.loading = true
             axiosInstance.get(apiUrl+"/round/start/"+(this.curRound+1)).then(data => {
                 this.loading = false
-
                 alert("开启成功");
+                window.location.reload();
 
             }).catch(err => {
                 this.loading = false
                 alert("开启失败")
+                window.location.reload();
             })
         },
         stopCurRound() {
@@ -120,10 +121,12 @@ createApp({
             axiosInstance.get(apiUrl+"/round/stop/"+this.curRound).then(data => {
                 this.loading = false
                 alert("停止投注成功");
+                window.location.reload();
 
             }).catch(err => {
                 this.loading = false
                 alert("停止投注失败")
+                window.location.reload();
             })
         },
         priceCurRound() {
@@ -131,10 +134,12 @@ createApp({
             axiosInstance.get(apiUrl+"/round/drawprice/"+this.curRound).then(data => {
                 this.loading = false
                 alert("开奖成功");
+                window.location.reload();
 
             }).catch(err => {
                 this.loading = false
                 alert("开奖失败")
+                window.location.reload();
             })
         },
     },
