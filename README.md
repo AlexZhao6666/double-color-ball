@@ -55,3 +55,6 @@ TODO:为了测试提高中奖概率，目前还未实现完整版双色球，目
   启动:(api-server -- --tx-id xxx可用的transactionIdxxx --api 0.0.0.0:5111 --node-url https://vm.aleo.org/api --snarkos-path /xxxx/snarkos --private-key xxxx)
 - web-serer
   部署时记得修改后端url地址，前后端分离，请使用nginx代理做跨域处理
+
+### 四、项目演示地址
+http://121.40.104.60:3033/dcb/index.html
