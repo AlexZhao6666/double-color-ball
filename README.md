@@ -48,13 +48,15 @@ TODO:为了测试提高中奖概率，目前还未实现完整版双色球，目
 
 ### 三、项目部署
 - contract
-  直接上链：（snarkos developer deploy double_color_ball.aleo --private-key xxxx --query "https://vm.aleo.org/api" --path "/xxxx/build/" --broadcast "https://vm.aleo.org/api/testnet3/transaction/broadcast" --fee 5000000 --record xxx
+  直接上链：（snarkos developer deploy double_color_ball.aleo --private-key xxxx --query "https://vm.aleo.org/api" --path "/xxxx/build/" --broadcast "https://vm.aleo.org/api/testnet3/transaction/broadcast" --fee 5000000 --record xxx)
+
 - api-serer
   rust语言编写，
   打包:cargo build --release
   启动:(api-server -- --tx-id xxx可用的transactionIdxxx --api 0.0.0.0:5111 --node-url https://vm.aleo.org/api --snarkos-path /xxxx/snarkos --private-key xxxx)
+
 - web-serer
-  部署时记得修改后端url地址，前后端分离，请使用nginx代理做跨域处理
+  部署时记得修改后端url地址，前后端分离，请使用nginx代理做跨域处理.
 
 ### 四、项目演示地址
 http://121.40.104.60:3033/dcb/index.html
