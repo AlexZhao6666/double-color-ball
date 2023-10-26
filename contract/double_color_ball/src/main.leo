@@ -1,5 +1,5 @@
-// The 'double_color_bal_alexzhao666666' program.
-program double_color_bal.aleo {
+// The 'double_color_ball_alexzhao666666' program.
+program double_color_ball.aleo {
 
     // 奖池
     struct PrizePool {
