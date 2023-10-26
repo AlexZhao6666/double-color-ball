@@ -1,5 +1,5 @@
-// The 'double_color_ball_alexzhao666666' program.
-program double_color_ball.aleo {
+// The 'double_color_bal_alexzhao666666' program.
+program double_color_bal.aleo {
 
     // 奖池
     struct PrizePool {
@@ -216,7 +216,7 @@ program double_color_ball.aleo {
                 } else if (red_ball_6==0u32&&(red_ball_1 != rand && red_ball_2 != rand && red_ball_3 != rand && red_ball_4 != rand && red_ball_5 != rand)) {
                     red_ball_6 = rand;
                     finish =true;
-                } 
+                }
             }
         }
 
@@ -227,13 +227,13 @@ program double_color_ball.aleo {
 
         let blue_number:u32= ChaCha::rand_u32();
         let blue_ball_1:u32 = blue_number.mod(16u32)+1u32;
-        
+
 
 
         let default_price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
                         user: caller,
-                        round_number: 0u32, 
-                        count:0u32, 
+                        round_number: 0u32,
+                        count:0u32,
                         gates: 0u64,
                         red_ball_1: 0u32,
                         red_ball_2: 0u32,
@@ -250,7 +250,7 @@ program double_color_ball.aleo {
         let second_price:TicketPurchasePriceInfo = default_price_info;
         let third_price:TicketPurchasePriceInfo = default_price_info;
 
-        let finish_flag_1:bool = false; 
+        let finish_flag_1:bool = false;
 
         if(current_prize_pool.current_round_num == 0u32) {
             finish_flag_1 = true;
@@ -258,8 +258,8 @@ program double_color_ball.aleo {
 
         let default_ticket:TicketPurchaseInfo = TicketPurchaseInfo {
             user: caller,
-            round_number: 0u32, 
-            count:0u32, 
+            round_number: 0u32,
+            count:0u32,
             gates: 0u64,
             red_ball_1: 0u32,
             red_ball_2: 0u32,
@@ -267,7 +267,7 @@ program double_color_ball.aleo {
             red_ball_4: 0u32,
             red_ball_5: 0u32,
             red_ball_6: 0u32,
-            blue_ball_1: 0u32 
+            blue_ball_1: 0u32
         };
 
         for i:u32 in 1u32..100u32 {
@@ -288,19 +288,19 @@ program double_color_ball.aleo {
                     if(temp_ticket_purchase.red_ball_2==red_ball_1 || temp_ticket_purchase.red_ball_2==red_ball_2 ||  temp_ticket_purchase.red_ball_2==red_ball_3 ||  temp_ticket_purchase.red_ball_2==red_ball_4 ||  temp_ticket_purchase.red_ball_2==red_ball_5 ||  temp_ticket_purchase.red_ball_2==red_ball_6) {
                          red_meet_count = red_meet_count +1u8;
                     }
-                    
+
                     if(temp_ticket_purchase.red_ball_3==red_ball_1 || temp_ticket_purchase.red_ball_3==red_ball_2 ||  temp_ticket_purchase.red_ball_3==red_ball_3 ||  temp_ticket_purchase.red_ball_3==red_ball_4 ||  temp_ticket_purchase.red_ball_3==red_ball_5 ||  temp_ticket_purchase.red_ball_3==red_ball_6) {
                          red_meet_count = red_meet_count +1u8;
                     }
-                    
+
                     if(temp_ticket_purchase.red_ball_4==red_ball_1 || temp_ticket_purchase.red_ball_4==red_ball_2 ||  temp_ticket_purchase.red_ball_4==red_ball_3 ||  temp_ticket_purchase.red_ball_4==red_ball_4 ||  temp_ticket_purchase.red_ball_4==red_ball_5 ||  temp_ticket_purchase.red_ball_4==red_ball_6) {
                          red_meet_count = red_meet_count +1u8;
                     }
-                    
+
                     if(temp_ticket_purchase.red_ball_5==red_ball_1 || temp_ticket_purchase.red_ball_5==red_ball_2 ||  temp_ticket_purchase.red_ball_5==red_ball_3 ||  temp_ticket_purchase.red_ball_5==red_ball_4 ||  temp_ticket_purchase.red_ball_5==red_ball_5 ||  temp_ticket_purchase.red_ball_5==red_ball_6) {
                          red_meet_count = red_meet_count +1u8;
                     }
-                    
+
                     if(temp_ticket_purchase.red_ball_6==red_ball_1 || temp_ticket_purchase.red_ball_6==red_ball_2 ||  temp_ticket_purchase.red_ball_6==red_ball_3 ||  temp_ticket_purchase.red_ball_6==red_ball_4 ||  temp_ticket_purchase.red_ball_6==red_ball_5 ||  temp_ticket_purchase.red_ball_6==red_ball_6) {
                          red_meet_count = red_meet_count +1u8;
                     }
@@ -309,30 +309,30 @@ program double_color_ball.aleo {
                         cur_prize = 1u8;
                     } else if (red_meet_count >=1u8) {
                         cur_prize = 2u8;
-                    } 
+                    }
                 } else {
                     // 未中蓝球
                     if(temp_ticket_purchase.red_ball_1==red_ball_1 || temp_ticket_purchase.red_ball_1==red_ball_2 ||  temp_ticket_purchase.red_ball_1==red_ball_3 ||  temp_ticket_purchase.red_ball_1==red_ball_4 ||  temp_ticket_purchase.red_ball_1==red_ball_5 ||  temp_ticket_purchase.red_ball_1==red_ball_6) {
                          red_meet_count = red_meet_count +1u8;
                     }
-                    
+
 
                     if(temp_ticket_purchase.red_ball_2==red_ball_1 || temp_ticket_purchase.red_ball_2==red_ball_2 ||  temp_ticket_purchase.red_ball_2==red_ball_3 ||  temp_ticket_purchase.red_ball_2==red_ball_4 ||  temp_ticket_purchase.red_ball_2==red_ball_5 ||  temp_ticket_purchase.red_ball_2==red_ball_6) {
                          red_meet_count = red_meet_count +1u8;
                     }
-                    
+
                     if(temp_ticket_purchase.red_ball_3==red_ball_1 || temp_ticket_purchase.red_ball_3==red_ball_2 ||  temp_ticket_purchase.red_ball_3==red_ball_3 ||  temp_ticket_purchase.red_ball_3==red_ball_4 ||  temp_ticket_purchase.red_ball_3==red_ball_5 ||  temp_ticket_purchase.red_ball_3==red_ball_6) {
                          red_meet_count = red_meet_count +1u8;
                     }
-                    
+
                     if(temp_ticket_purchase.red_ball_4==red_ball_1 || temp_ticket_purchase.red_ball_4==red_ball_2 ||  temp_ticket_purchase.red_ball_4==red_ball_3 ||  temp_ticket_purchase.red_ball_4==red_ball_4 ||  temp_ticket_purchase.red_ball_4==red_ball_5 ||  temp_ticket_purchase.red_ball_4==red_ball_6) {
                          red_meet_count = red_meet_count +1u8;
                     }
-                    
+
                     if(temp_ticket_purchase.red_ball_5==red_ball_1 || temp_ticket_purchase.red_ball_5==red_ball_2 ||  temp_ticket_purchase.red_ball_5==red_ball_3 ||  temp_ticket_purchase.red_ball_5==red_ball_4 ||  temp_ticket_purchase.red_ball_5==red_ball_5 ||  temp_ticket_purchase.red_ball_5==red_ball_6) {
                          red_meet_count = red_meet_count +1u8;
                     }
-                    
+
                     if(temp_ticket_purchase.red_ball_6==red_ball_1 || temp_ticket_purchase.red_ball_6==red_ball_2 ||  temp_ticket_purchase.red_ball_6==red_ball_3 ||  temp_ticket_purchase.red_ball_6==red_ball_4 ||  temp_ticket_purchase.red_ball_6==red_ball_5 ||  temp_ticket_purchase.red_ball_6==red_ball_6) {
                          red_meet_count = red_meet_count +1u8;
                     }
@@ -341,14 +341,14 @@ program double_color_ball.aleo {
                         cur_prize = 2u8;
                     }
                 }
-                
+
                 if (cur_prize == 1u8) {
 
                     if(first_price.index>1u32) {
                         let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
                             user: temp_ticket_purchase.user,
-                            round_number: temp_ticket_purchase.round_number, 
-                            count:temp_ticket_purchase.count, 
+                            round_number: temp_ticket_purchase.round_number,
+                            count:temp_ticket_purchase.count,
                             gates: temp_ticket_purchase.gates,
                             red_ball_1: temp_ticket_purchase.red_ball_1,
                             red_ball_2: temp_ticket_purchase.red_ball_2,
@@ -367,8 +367,8 @@ program double_color_ball.aleo {
                         if(second_price.index>1u32) {
                             let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
                                 user: temp_ticket_purchase.user,
-                                round_number: temp_ticket_purchase.round_number, 
-                                count:temp_ticket_purchase.count, 
+                                round_number: temp_ticket_purchase.round_number,
+                                count:temp_ticket_purchase.count,
                                 gates: temp_ticket_purchase.gates,
                                 red_ball_1: temp_ticket_purchase.red_ball_1,
                                 red_ball_2: temp_ticket_purchase.red_ball_2,
@@ -383,9 +383,9 @@ program double_color_ball.aleo {
                             // 第二名变为第三名
                             third_price = second_price;
                             second_price = price_info;
-                        } 
+                        }
                     }
-                } 
+                }
 
 
                 if (cur_prize == 2u8) {
@@ -394,8 +394,8 @@ program double_color_ball.aleo {
                     if(second_price.index>2u32) {
                         let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
                             user: temp_ticket_purchase.user,
-                            round_number: temp_ticket_purchase.round_number, 
-                            count:temp_ticket_purchase.count, 
+                            round_number: temp_ticket_purchase.round_number,
+                            count:temp_ticket_purchase.count,
                             gates: temp_ticket_purchase.gates,
                             red_ball_1: temp_ticket_purchase.red_ball_1,
                             red_ball_2: temp_ticket_purchase.red_ball_2,
@@ -415,8 +415,8 @@ program double_color_ball.aleo {
                         if(third_price.index>2u32) {
                             let price_info:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
                                 user: temp_ticket_purchase.user,
-                                round_number: temp_ticket_purchase.round_number, 
-                                count:temp_ticket_purchase.count, 
+                                round_number: temp_ticket_purchase.round_number,
+                                count:temp_ticket_purchase.count,
                                 gates: temp_ticket_purchase.gates,
                                 red_ball_1: temp_ticket_purchase.red_ball_1,
                                 red_ball_2: temp_ticket_purchase.red_ball_2,
@@ -430,10 +430,10 @@ program double_color_ball.aleo {
                             };
                             // 第三名
                             third_price = price_info;
-                        } 
+                        }
                     }
-                    
-                } 
+
+                }
 
             }
             }
@@ -450,16 +450,16 @@ program double_color_ball.aleo {
         if (first_price.index == 1u32) {
             if (first_price.index == 1u32 && second_price.index==10u32)  {
                 first_reward = first_total_price_amount;
-            } 
+            }
 
             if (first_price.index == 1u32 && second_price.index==1u32)  {
                 first_reward = first_total_price_amount*1u64/2u64;
                 second_reward = first_total_price_amount*1u64/2u64;
-            } 
+            }
             if (first_price.index == 1u32 && second_price.index==2u32)  {
                 first_reward = first_total_price_amount;
                 second_reward = second_total_price_amount;
-            } 
+            }
 
         } else {
             // 无一等奖中奖
@@ -467,11 +467,11 @@ program double_color_ball.aleo {
             if(second_price.index == 2u32) {
                 if (second_price.index == 2u32 && third_price.index==10u32)  {
                     second_reward = second_total_price_amount;
-                } 
+                }
                 if (second_price.index == 2u32 && third_price.index==2u32)  {
                     second_reward = second_total_price_amount*1u64/2u64;
                     third_reward = second_total_price_amount*1u64/2u64;
-                } 
+                }
             }
         }
 
@@ -485,8 +485,8 @@ program double_color_ball.aleo {
             // 有一等奖
             let price_info_1:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
                 user: first_price.user,
-                round_number: first_price.round_number, 
-                count:first_price.count, 
+                round_number: first_price.round_number,
+                count:first_price.count,
                 gates: first_price.gates,
                 red_ball_1: first_price.red_ball_1,
                 red_ball_2: first_price.red_ball_2,
@@ -500,8 +500,8 @@ program double_color_ball.aleo {
             };
             let price_info_2:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
                 user: second_price.user,
-                round_number: second_price.round_number, 
-                count:second_price.count, 
+                round_number: second_price.round_number,
+                count:second_price.count,
                 gates: second_price.gates,
                 red_ball_1: second_price.red_ball_1,
                 red_ball_2: second_price.red_ball_2,
@@ -521,8 +521,8 @@ program double_color_ball.aleo {
         } else {
             let price_info_1:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
                 user: second_price.user,
-                round_number: second_price.round_number, 
-                count:second_price.count, 
+                round_number: second_price.round_number,
+                count:second_price.count,
                 gates: second_price.gates,
                 red_ball_1: second_price.red_ball_1,
                 red_ball_2: second_price.red_ball_2,
@@ -536,8 +536,8 @@ program double_color_ball.aleo {
             };
             let price_info_2:TicketPurchasePriceInfo = TicketPurchasePriceInfo {
                 user: third_price.user,
-                round_number: third_price.round_number, 
-                count:third_price.count, 
+                round_number: third_price.round_number,
+                count:third_price.count,
                 gates: third_price.gates,
                 red_ball_1: third_price.red_ball_1,
                 red_ball_2: third_price.red_ball_2,
@@ -567,14 +567,14 @@ program double_color_ball.aleo {
         Mapping::set(currentPrizePoolMap,1u8,update_prize_pool);
 
         let cur_lottery_drawing:LotteryDrawing = LotteryDrawing {
-            round_number: current_prize_pool.current_round,  
+            round_number: current_prize_pool.current_round,
             red_ball_1: red_ball_1,
             red_ball_2: red_ball_2,
             red_ball_3: red_ball_3,
             red_ball_4: red_ball_4,
             red_ball_5: red_ball_5,
             red_ball_6: red_ball_6,
-            blue_ball_1: blue_ball_1 
+            blue_ball_1: blue_ball_1
         };
         Mapping::set(lotteryDrawingMap,current_prize_pool.current_round,cur_lottery_drawing);
     }
