@@ -270,7 +270,7 @@ program double_color_bal.aleo {
             blue_ball_1: 0u32
         };
 
-        for i:u32 in 1u32..100u32 {
+        for i:u32 in 1u32..10u32 {
             let index_final:u32 = i;
             if (!finish_flag_1 && index_final <= current_prize_pool.current_round_num) {
                 let temp_ticket_purchase:TicketPurchaseInfo = Mapping::get_or_use(ticketPurchaseMap,i,default_ticket);
