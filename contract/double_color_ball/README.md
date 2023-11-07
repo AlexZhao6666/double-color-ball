@@ -1,5 +1,8 @@
 # double_color_ball.aleo
 
+Hello everyone, my name is Alex Zhao. My Discord username is 'alzhao6666'. Welcome to contact me!
+![image](https://github.com/AlexZhao6666/double-color-ball/assets/136443781/f2059d89-60d0-4215-86ca-78f84bc82cd3)
+
 ## Build Guide
 
 To compile this Aleo program, run:
