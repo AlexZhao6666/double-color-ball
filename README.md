@@ -1,4 +1,7 @@
 # 基于leo语言实现的双色球
+Hello everyone, my name is Alex Zhao. My Discord username is 'alzhao6666'. Welcome to contact me!
+![image](https://github.com/AlexZhao6666/double-color-ball/assets/136443781/72ec7969-28c7-4e5d-9bf6-46ad010c37ef)
+
 ## 一、游戏介绍：
 ### 1.玩法
 - 1.开启一期双色球
